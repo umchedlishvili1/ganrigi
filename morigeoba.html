@@ -2,34 +2,27 @@
 <html lang="ka">
 <head>
     <meta charset="UTF-8">
-    <title>Multi-Month Duty Planner</title>
+    <title>Duty Planner - Work Hours</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; display: flex; height: 100vh; }
-        #sidebar { width: 320px; background: #2c3e50; color: white; padding: 25px; box-shadow: 3px 0 10px rgba(0,0,0,0.2); overflow-y: auto; }
+        #sidebar { width: 340px; background: #2c3e50; color: white; padding: 25px; box-shadow: 3px 0 10px rgba(0,0,0,0.2); overflow-y: auto; }
         #main { flex-grow: 1; padding: 30px; overflow-y: auto; }
-        
         .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h3 { border-bottom: 1px solid #455a64; padding-bottom: 10px; margin-top: 15px; }
-        
-        .date-range { display: flex; gap: 5px; flex-direction: column; }
         input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; }
-        
-        .staff-item { background: #34495e; padding: 8px; margin-top: 5px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
-        .del-btn { color: #ff7675; cursor: pointer; border: none; background: none; font-weight: bold; }
-
+        .staff-item { background: #1e272e; padding: 10px; margin-top: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #3498db; }
+        .del-btn { color: #ff7675; cursor: pointer; border: none; background: none; font-weight: bold; font-size: 18px; }
         .stat-container { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; }
         .stat-badge { background: #fff; border: 1px solid #3498db; padding: 4px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
-
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th, td { padding: 10px; border: 1px solid #dee2e6; text-align: left; font-size: 14px; }
-        th { background: #3498db; color: white; position: sticky; top: 0; }
-        
-        .month-header { background: #ecf0f1; padding: 10px; font-weight: bold; color: #2c3e50; border-left: 5px solid #3498db; margin-top: 20px; }
-        .draggable { cursor: grab; background: #e3f2fd; padding: 5px; border-radius: 4px; display: block; border: 1px solid #bbdefb; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+        th, td { padding: 12px; border: 1px solid #dee2e6; text-align: left; }
+        th { background: #3498db; color: white; }
+        .month-header { background: #2c3e50; color: white; padding: 12px; font-weight: bold; margin-top: 25px; border-radius: 4px; }
+        .draggable { cursor: grab; background: #e3f2fd; padding: 8px; border-radius: 6px; display: block; border: 1px solid #bbdefb; }
+        .phone-text { display: block; font-size: 11px; color: #7f8c8d; }
+        .hours-tag { font-size: 11px; background: #ffeaa7; color: #d35400; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-top: 4px; display: inline-block; }
         .weekend { background: #fff5f5; color: #e74c3c; font-weight: bold; }
-
         .btn { border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; color: white; }
         .btn-gen { background: #27ae60; }
         .btn-pdf { background: #e67e22; }
@@ -39,85 +32,84 @@
 
 <div id="sidebar">
     <h3>📅 პერიოდი</h3>
-    <div class="date-range">
-        <label style="font-size: 12px;">დან:</label>
-        <input type="month" id="startMonth">
-        <label style="font-size: 12px;">მდე:</label>
-        <input type="month" id="endMonth">
-    </div>
+    <input type="month" id="startMonth">
+    <input type="month" id="endMonth">
 
     <h3>👥 პერსონალი</h3>
-    <input type="text" id="staffInput" placeholder="სახელი + Enter" onkeypress="if(event.key==='Enter') addStaff()">
+    <input type="text" id="staffName" placeholder="სახელი">
+    <input type="text" id="staffPhone" placeholder="ნომერი" onkeypress="if(event.key==='Enter') addStaff()">
+    <button class="btn btn-gen" onclick="addStaff()">დამატება</button>
     <div id="staffListUI"></div>
 
-    <button class="btn btn-gen" onclick="generateSchedule()">🔄 განრიგის შექმნა</button>
+    <button class="btn btn-gen" style="margin-top: 30px;" onclick="generateNew()">🔄 განრიგის შექმნა</button>
     <button class="btn btn-pdf" onclick="exportPDF()">📄 PDF ექსპორტი</button>
 </div>
 
 <div id="main">
     <div class="card" id="printArea">
-        <h2 style="color: #2c3e50; text-align: center;">მორიგეობის ერთიანი განრიგი</h2>
+        <h2 id="mainTitle">სამუშაო განრიგი და საათები</h2>
         <div id="statsUI" class="stat-container"></div>
         <div id="scheduleContainer"></div>
     </div>
 </div>
 
 <script>
-    let staff = JSON.parse(localStorage.getItem('savedStaff')) || [];
-    let scheduleData = []; 
-    const geoDays = ["კვირა", "ორშაბათი", "სამშაბათი", "ოთხშაბათი", "ხუთშაბათი", "პარასკევი", "შაბათი"];
-    const geoMonths = ["იანვარი", "თებერვალი", "მარტი", "აპრილი", "მაისი", "ივნისი", "ივლისი", "აგვისტო", "სექტემბერი", "ოქტომბერი", "ნოემბერი", "დეკემბერი"];
+    // ვიყენებთ იგივე გასაღებებს, რაც წინა ვერსიაში, ინფორმაცია რომ არ დაიკარგოს
+    let staff = JSON.parse(localStorage.getItem('savedStaffContacts')) || [];
+    let scheduleData = JSON.parse(localStorage.getItem('currentSchedule')) || [];
 
     window.onload = () => {
         const now = new Date();
         const monthStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-        document.getElementById('startMonth').value = monthStr;
-        document.getElementById('endMonth').value = monthStr;
+        document.getElementById('startMonth').value = localStorage.getItem('startMonth') || monthStr;
+        document.getElementById('endMonth').value = localStorage.getItem('endMonth') || monthStr;
         renderStaff();
+        if(scheduleData.length > 0) renderMultiTable();
     };
 
     function addStaff() {
-        const input = document.getElementById('staffInput');
-        if(input.value.trim()) {
-            staff.push(input.value.trim());
-            localStorage.setItem('savedStaff', JSON.stringify(staff));
-            input.value = "";
+        const n = document.getElementById('staffName'), p = document.getElementById('staffPhone');
+        if(n.value.trim()) {
+            staff.push({ name: n.value.trim(), phone: p.value.trim() || "---" });
+            localStorage.setItem('savedStaffContacts', JSON.stringify(staff));
+            n.value = ""; p.value = ""; n.focus();
             renderStaff();
         }
     }
 
-    function removeStaff(index) {
-        staff.splice(index, 1);
-        localStorage.setItem('savedStaff', JSON.stringify(staff));
+    function removeStaff(i) {
+        staff.splice(i, 1);
+        localStorage.setItem('savedStaffContacts', JSON.stringify(staff));
         renderStaff();
     }
 
     function renderStaff() {
         document.getElementById('staffListUI').innerHTML = staff.map((s, i) => `
-            <div class="staff-item"><span>${s}</span><button class="del-btn" onclick="removeStaff(${i})">×</button></div>
-        `).join('');
+            <div class="staff-item">
+                <div><b>${s.name}</b><br><small>${s.phone}</small></div>
+                <button class="del-btn" onclick="removeStaff(${i})">×</button>
+            </div>`).join('');
     }
 
-    function generateSchedule() {
-        if(staff.length === 0) return alert("დაამატეთ თანამშრომლები!");
-        
+    function generateNew() {
+        if(staff.length === 0) return alert("დაამატეთ პერსონალი!");
         const start = new Date(document.getElementById('startMonth').value);
         const end = new Date(document.getElementById('endMonth').value);
+        localStorage.setItem('startMonth', document.getElementById('startMonth').value);
+        localStorage.setItem('endMonth', document.getElementById('endMonth').value);
         
-        if(end < start) return alert("დასრულების თვე უნდა იყოს დაწყების თვის შემდეგ!");
-
         scheduleData = [];
-        let tempDate = new Date(start.getFullYear(), start.getMonth(), 1);
-        let staffIdx = 0;
-
-        while(tempDate <= new Date(end.getFullYear(), end.getMonth() + 1, 0)) {
-            scheduleData.push({
-                date: new Date(tempDate),
-                staffName: staff[staffIdx % staff.length]
+        let temp = new Date(start.getFullYear(), start.getMonth(), 1);
+        let idx = 0;
+        while(temp <= new Date(end.getFullYear(), end.getMonth() + 1, 0)) {
+            scheduleData.push({ 
+                date: new Date(temp), 
+                staffName: staff[idx % staff.length].name, 
+                staffPhone: staff[idx % staff.length].phone 
             });
-            staffIdx++;
-            tempDate.setDate(tempDate.getDate() + 1);
+            idx++; temp.setDate(temp.getDate() + 1);
         }
+        localStorage.setItem('currentSchedule', JSON.stringify(scheduleData));
         renderMultiTable();
     }
 
@@ -125,57 +117,62 @@
         const container = document.getElementById('scheduleContainer');
         container.innerHTML = "";
         let currentMonth = -1;
-        let currentTableBody;
+        let currentBody;
+        const months = ["იანვარი", "თებერვალი", "მარტი", "აპრილი", "მაისი", "ივნისი", "ივლისი", "აგვისტო", "სექტემბერი", "ოქტომბერი", "ნოებერი", "დეკემბერი"];
+        const days = ["კვირა", "ორშაბათი", "სამშაბათი", "ოთხშაბათი", "ხუთშაბათი", "პარასკევი", "შაბათი"];
 
-        scheduleData.forEach((item, index) => {
-            if(item.date.getMonth() !== currentMonth) {
-                currentMonth = item.date.getMonth();
-                const mHeader = document.createElement('div');
-                mHeader.className = "month-header";
-                mHeader.innerText = `${geoMonths[currentMonth]} ${item.date.getFullYear()}`;
-                container.appendChild(mHeader);
-
+        scheduleData.forEach((item, i) => {
+            const d = new Date(item.date);
+            if(d.getMonth() !== currentMonth) {
+                currentMonth = d.getMonth();
+                container.innerHTML += `<div class="month-header">${months[currentMonth]} ${d.getFullYear()}</div>`;
                 const table = document.createElement('table');
-                table.innerHTML = `<thead><tr><th width="100">თარიღი</th><th width="120">დღე</th><th>მორიგე</th></tr></thead>`;
-                currentTableBody = document.createElement('tbody');
-                table.appendChild(currentTableBody);
+                table.innerHTML = `<thead><tr><th>თარიღი</th><th>დღე</th><th>საათები</th><th>მორიგე</th></tr></thead><tbody id="body-${currentMonth}"></tbody>`;
                 container.appendChild(table);
+                currentBody = document.getElementById(`body-${currentMonth}`);
             }
+            
+            const isWE = d.getDay() === 0 || d.getDay() === 6;
+            // საათების ლოგიკა: შაბათ-კვირა 08:00, სხვა დღეები 18:00
+            const workHours = isWE ? "08:00 - 03:00" : "18:00 - 03:00";
 
-            const isWeekend = item.date.getDay() === 0 || item.date.getDay() === 6;
-            currentTableBody.innerHTML += `
-                <tr class="${isWeekend ? 'weekend' : ''}">
-                    <td>${item.date.getDate()} ${geoMonths[currentMonth].substring(0,3)}</td>
-                    <td>${geoDays[item.date.getDay()]}</td>
-                    <td ondrop="drop(event, ${index})" ondragover="allowDrop(event)">
-                        <span class="draggable" draggable="true" ondragstart="drag(event, ${index})" ondblclick="editCellName(${index})">
-                            ${item.staffName}
-                        </span>
-                    </td>
-                </tr>`;
+            currentBody.innerHTML += `<tr class="${isWE ? 'weekend' : ''}">
+                <td>${d.getDate()} ${months[currentMonth].substring(0,3)}</td>
+                <td>${days[d.getDay()]}</td>
+                <td><span class="hours-tag">${workHours}</span></td>
+                <td ondrop="drop(event, ${i})" ondragover="allowDrop(event)">
+                    <span class="draggable" draggable="true" ondragstart="drag(event, ${i})" ondblclick="editCell(${i})">
+                        ${item.staffName} <span class="phone-text">${item.staffPhone}</span>
+                    </span>
+                </td></tr>`;
         });
         updateStats();
     }
 
     function updateStats() {
-        const counts = {};
-        scheduleData.forEach(item => counts[item.staffName] = (counts[item.staffName] || 0) + 1);
-        document.getElementById('statsUI').innerHTML = Object.entries(counts).map(([n, c]) => `
-            <div class="stat-badge">${n}: <span>${c} დღე</span></div>
-        `).join('');
+        const c = {};
+        scheduleData.forEach(item => c[item.staffName] = (c[item.staffName] || 0) + 1);
+        document.getElementById('statsUI').innerHTML = Object.entries(c).map(([n, count]) => `<div class="stat-badge">${n}: ${count} დღე</div>`).join('');
     }
 
-    function editCellName(index) {
-        const newName = prompt("შეიყვანეთ ახალი სახელი:", scheduleData[index].staffName);
-        if (newName) { scheduleData[index].staffName = newName.trim(); renderMultiTable(); }
+    function editCell(i) {
+        const n = prompt("სახელი:", scheduleData[i].staffName);
+        if(n) {
+            scheduleData[i].staffName = n;
+            scheduleData[i].staffPhone = prompt("ნომერი:", scheduleData[i].staffPhone) || "";
+            localStorage.setItem('currentSchedule', JSON.stringify(scheduleData));
+            renderMultiTable();
+        }
     }
 
+    function drag(ev, i) { ev.dataTransfer.setData("idx", i); }
     function allowDrop(ev) { ev.preventDefault(); }
-    function drag(ev, index) { ev.dataTransfer.setData("index", index); }
-    function drop(ev, toIndex) {
+    function drop(ev, to) {
         ev.preventDefault();
-        const fromIndex = ev.dataTransfer.getData("index");
-        [scheduleData[fromIndex].staffName, scheduleData[toIndex].staffName] = [scheduleData[toIndex].staffName, scheduleData[fromIndex].staffName];
+        const from = ev.dataTransfer.getData("idx");
+        [scheduleData[from].staffName, scheduleData[to].staffName] = [scheduleData[to].staffName, scheduleData[from].staffName];
+        [scheduleData[from].staffPhone, scheduleData[to].staffPhone] = [scheduleData[to].staffPhone, scheduleData[from].staffPhone];
+        localStorage.setItem('currentSchedule', JSON.stringify(scheduleData));
         renderMultiTable();
     }
 
@@ -183,22 +180,195 @@
         const { jsPDF } = window.jspdf;
         const canvas = await html2canvas(document.getElementById('printArea'), { scale: 1.5 });
         const pdf = new jsPDF('p', 'mm', 'a4');
-        const imgWidth = 190;
-        const pageHeight = 295;
-        const imgHeight = canvas.height * imgWidth / canvas.width;
-        let heightLeft = imgHeight;
-        let position = 10;
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, 190, 0);
+        pdf.save("Work_Schedule_Hours.pdf");
+    }
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <title>Duty Planner - Work Hours</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; display: flex; height: 100vh; }
+        #sidebar { width: 340px; background: #2c3e50; color: white; padding: 25px; box-shadow: 3px 0 10px rgba(0,0,0,0.2); overflow-y: auto; }
+        #main { flex-grow: 1; padding: 30px; overflow-y: auto; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; }
+        .staff-item { background: #1e272e; padding: 10px; margin-top: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #3498db; }
+        .del-btn { color: #ff7675; cursor: pointer; border: none; background: none; font-weight: bold; font-size: 18px; }
+        .stat-container { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; }
+        .stat-badge { background: #fff; border: 1px solid #3498db; padding: 4px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
+        th, td { padding: 12px; border: 1px solid #dee2e6; text-align: left; }
+        th { background: #3498db; color: white; }
+        .month-header { background: #2c3e50; color: white; padding: 12px; font-weight: bold; margin-top: 25px; border-radius: 4px; }
+        .draggable { cursor: grab; background: #e3f2fd; padding: 8px; border-radius: 6px; display: block; border: 1px solid #bbdefb; }
+        .phone-text { display: block; font-size: 11px; color: #7f8c8d; }
+        .hours-tag { font-size: 11px; background: #ffeaa7; color: #d35400; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-top: 4px; display: inline-block; }
+        .weekend { background: #fff5f5; color: #e74c3c; font-weight: bold; }
+        .btn { border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; color: white; }
+        .btn-gen { background: #27ae60; }
+        .btn-pdf { background: #e67e22; }
+    </style>
+</head>
+<body>
 
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+<div id="sidebar">
+    <h3>📅 პერიოდი</h3>
+    <input type="month" id="startMonth">
+    <input type="month" id="endMonth">
 
-        while (heightLeft >= 0) {
-            position = heightLeft - imgHeight;
-            pdf.addPage();
-            pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, position, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
+    <h3>👥 პერსონალი</h3>
+    <input type="text" id="staffName" placeholder="სახელი">
+    <input type="text" id="staffPhone" placeholder="ნომერი" onkeypress="if(event.key==='Enter') addStaff()">
+    <button class="btn btn-gen" onclick="addStaff()">დამატება</button>
+    <div id="staffListUI"></div>
+
+    <button class="btn btn-gen" style="margin-top: 30px;" onclick="generateNew()">🔄 განრიგის შექმნა</button>
+    <button class="btn btn-pdf" onclick="exportPDF()">📄 PDF ექსპორტი</button>
+</div>
+
+<div id="main">
+    <div class="card" id="printArea">
+        <h2 id="mainTitle">სამუშაო განრიგი და საათები</h2>
+        <div id="statsUI" class="stat-container"></div>
+        <div id="scheduleContainer"></div>
+    </div>
+</div>
+
+<script>
+    // ვიყენებთ იგივე გასაღებებს, რაც წინა ვერსიაში, ინფორმაცია რომ არ დაიკარგოს
+    let staff = JSON.parse(localStorage.getItem('savedStaffContacts')) || [];
+    let scheduleData = JSON.parse(localStorage.getItem('currentSchedule')) || [];
+
+    window.onload = () => {
+        const now = new Date();
+        const monthStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+        document.getElementById('startMonth').value = localStorage.getItem('startMonth') || monthStr;
+        document.getElementById('endMonth').value = localStorage.getItem('endMonth') || monthStr;
+        renderStaff();
+        if(scheduleData.length > 0) renderMultiTable();
+    };
+
+    function addStaff() {
+        const n = document.getElementById('staffName'), p = document.getElementById('staffPhone');
+        if(n.value.trim()) {
+            staff.push({ name: n.value.trim(), phone: p.value.trim() || "---" });
+            localStorage.setItem('savedStaffContacts', JSON.stringify(staff));
+            n.value = ""; p.value = ""; n.focus();
+            renderStaff();
         }
-        pdf.save("Full_Schedule.pdf");
+    }
+
+    function removeStaff(i) {
+        staff.splice(i, 1);
+        localStorage.setItem('savedStaffContacts', JSON.stringify(staff));
+        renderStaff();
+    }
+
+    function renderStaff() {
+        document.getElementById('staffListUI').innerHTML = staff.map((s, i) => `
+            <div class="staff-item">
+                <div><b>${s.name}</b><br><small>${s.phone}</small></div>
+                <button class="del-btn" onclick="removeStaff(${i})">×</button>
+            </div>`).join('');
+    }
+
+    function generateNew() {
+        if(staff.length === 0) return alert("დაამატეთ პერსონალი!");
+        const start = new Date(document.getElementById('startMonth').value);
+        const end = new Date(document.getElementById('endMonth').value);
+        localStorage.setItem('startMonth', document.getElementById('startMonth').value);
+        localStorage.setItem('endMonth', document.getElementById('endMonth').value);
+        
+        scheduleData = [];
+        let temp = new Date(start.getFullYear(), start.getMonth(), 1);
+        let idx = 0;
+        while(temp <= new Date(end.getFullYear(), end.getMonth() + 1, 0)) {
+            scheduleData.push({ 
+                date: new Date(temp), 
+                staffName: staff[idx % staff.length].name, 
+                staffPhone: staff[idx % staff.length].phone 
+            });
+            idx++; temp.setDate(temp.getDate() + 1);
+        }
+        localStorage.setItem('currentSchedule', JSON.stringify(scheduleData));
+        renderMultiTable();
+    }
+
+    function renderMultiTable() {
+        const container = document.getElementById('scheduleContainer');
+        container.innerHTML = "";
+        let currentMonth = -1;
+        let currentBody;
+        const months = ["იანვარი", "თებერვალი", "მარტი", "აპრილი", "მაისი", "ივნისი", "ივლისი", "აგვისტო", "სექტემბერი", "ოქტომბერი", "ნოებერი", "დეკემბერი"];
+        const days = ["კვირა", "ორშაბათი", "სამშაბათი", "ოთხშაბათი", "ხუთშაბათი", "პარასკევი", "შაბათი"];
+
+        scheduleData.forEach((item, i) => {
+            const d = new Date(item.date);
+            if(d.getMonth() !== currentMonth) {
+                currentMonth = d.getMonth();
+                container.innerHTML += `<div class="month-header">${months[currentMonth]} ${d.getFullYear()}</div>`;
+                const table = document.createElement('table');
+                table.innerHTML = `<thead><tr><th>თარიღი</th><th>დღე</th><th>საათები</th><th>მორიგე</th></tr></thead><tbody id="body-${currentMonth}"></tbody>`;
+                container.appendChild(table);
+                currentBody = document.getElementById(`body-${currentMonth}`);
+            }
+            
+            const isWE = d.getDay() === 0 || d.getDay() === 6;
+            // საათების ლოგიკა: შაბათ-კვირა 08:00, სხვა დღეები 18:00
+            const workHours = isWE ? "08:00 - 03:00" : "18:00 - 03:00";
+
+            currentBody.innerHTML += `<tr class="${isWE ? 'weekend' : ''}">
+                <td>${d.getDate()} ${months[currentMonth].substring(0,3)}</td>
+                <td>${days[d.getDay()]}</td>
+                <td><span class="hours-tag">${workHours}</span></td>
+                <td ondrop="drop(event, ${i})" ondragover="allowDrop(event)">
+                    <span class="draggable" draggable="true" ondragstart="drag(event, ${i})" ondblclick="editCell(${i})">
+                        ${item.staffName} <span class="phone-text">${item.staffPhone}</span>
+                    </span>
+                </td></tr>`;
+        });
+        updateStats();
+    }
+
+    function updateStats() {
+        const c = {};
+        scheduleData.forEach(item => c[item.staffName] = (c[item.staffName] || 0) + 1);
+        document.getElementById('statsUI').innerHTML = Object.entries(c).map(([n, count]) => `<div class="stat-badge">${n}: ${count} დღე</div>`).join('');
+    }
+
+    function editCell(i) {
+        const n = prompt("სახელი:", scheduleData[i].staffName);
+        if(n) {
+            scheduleData[i].staffName = n;
+            scheduleData[i].staffPhone = prompt("ნომერი:", scheduleData[i].staffPhone) || "";
+            localStorage.setItem('currentSchedule', JSON.stringify(scheduleData));
+            renderMultiTable();
+        }
+    }
+
+    function drag(ev, i) { ev.dataTransfer.setData("idx", i); }
+    function allowDrop(ev) { ev.preventDefault(); }
+    function drop(ev, to) {
+        ev.preventDefault();
+        const from = ev.dataTransfer.getData("idx");
+        [scheduleData[from].staffName, scheduleData[to].staffName] = [scheduleData[to].staffName, scheduleData[from].staffName];
+        [scheduleData[from].staffPhone, scheduleData[to].staffPhone] = [scheduleData[to].staffPhone, scheduleData[from].staffPhone];
+        localStorage.setItem('currentSchedule', JSON.stringify(scheduleData));
+        renderMultiTable();
+    }
+
+    async function exportPDF() {
+        const { jsPDF } = window.jspdf;
+        const canvas = await html2canvas(document.getElementById('printArea'), { scale: 1.5 });
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, 190, 0);
+        pdf.save("Work_Schedule_Hours.pdf");
     }
 </script>
 </body>
