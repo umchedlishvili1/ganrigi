@@ -1,265 +1,204 @@
 <style>
-            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-family: sans-serif; }
-            th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-            th { background-color: #3498db; color: white; }
-            .month-header { background: #2c3e50; color: white; padding: 10px; font-weight: bold; margin-top: 20px; }
-            .weekend { background-color: #fff5f5; color: #e74c3c; }
-            .hours-tag { background: #ffeaa7; color: #d35400; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; }
-            .phone-text { display: inline-block; font-size: 11px; color: #7f8c8d; transition: all 0.3s ease; text-decoration: none; position: relative; }
-            .phone-text:hover { color: #27ae60; font-weight: bold; }
-            .phone-text:hover::after { content: ' 📞'; animation: bounce 0.5s infinite alternate; }
-            @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-3px); } }
-        </style>
-<div class="month-header">თებერვალი 2026</div><table><thead><tr><th>თარიღი</th><th>დღე</th><th>საათები</th><th>მორიგე</th></tr></thead><tbody id="body-1"><tr class="weekend">
-                <td>1 თებ</td>
-                <td>კვირა</td>
-                <td><span class="hours-tag">08:00 - 03:00</span></td>
+            table { width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 14px; }
+            th, td { border: 1px solid #ddd; padding: 8px; }
+            th { background: #3498db; color: white; }
+            .weekend { background: #fff5f5; color: #e74c3c; }
+            .phone-text { color: #7f8c8d; text-decoration: none; font-size: 11px; }
+            .phone-text:hover { color: #27ae60; }
+        </style><div class="month-header">თებერვალი 2026</div><table><thead><tr><th>თარიღი</th><th>საათები</th><th>მორიგე</th></tr></thead><tbody id="body-1"><tr class="weekend">
+                <td>1 (კვი)</td>
+                <td>08:00-03:00</td>
                 <td ondrop="drop(event, 0)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        გიორგი ტარყაშვილი <br>
-                        <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 0)" ondblclick="editCell(0)">
+                        გიორგი ტარყაშვილი <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
                     </span>
                 </td></tr><tr class="">
-                <td>2 თებ</td>
-                <td>ორშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>2 (ორშ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 1)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        გიორგი ლომიძე <br>
-                        <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 1)" ondblclick="editCell(1)">
+                        გიორგი ლომიძე <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
                     </span>
                 </td></tr><tr class="">
-                <td>3 თებ</td>
-                <td>სამშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>3 (სამ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 2)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        ვასილ გოგალაძე <br>
-                        <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 2)" ondblclick="editCell(2)">
+                        ვასილ გოგალაძე <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
                     </span>
                 </td></tr><tr class="">
-                <td>4 თებ</td>
-                <td>ოთხშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>4 (ოთხ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 3)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        შალვა გაგნიძე <br>
-                        <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 3)" ondblclick="editCell(3)">
+                        შალვა გაგნიძე <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
                     </span>
                 </td></tr><tr class="">
-                <td>5 თებ</td>
-                <td>ხუთშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>5 (ხუთ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 4)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        ბექა ტალახაძე <br>
-                        <a href="tel:551 98 27 72" class="phone-text">551 98 27 72</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 4)" ondblclick="editCell(4)">
+                        ბექა ტალახაძე <a href="tel:551 98 27 72" class="phone-text">551 98 27 72</a>
                     </span>
                 </td></tr><tr class="">
-                <td>6 თებ</td>
-                <td>პარასკევი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>6 (პარ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 5)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        გიორგი ბოჭორიშვილი <br>
-                        <a href="tel:577 01 83 12" class="phone-text">577 01 83 12</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 5)" ondblclick="editCell(5)">
+                        გიორგი ბოჭორიშვილი <a href="tel:577 01 83 12" class="phone-text">577 01 83 12</a>
                     </span>
                 </td></tr><tr class="weekend">
-                <td>7 თებ</td>
-                <td>შაბათი</td>
-                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td>7 (შაბ)</td>
+                <td>08:00-03:00</td>
                 <td ondrop="drop(event, 6)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        ალიკა ყალიჩავა <br>
-                        <a href="tel:591 90 35 90" class="phone-text">591 90 35 90</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 6)" ondblclick="editCell(6)">
+                        ალიკა ყალიჩავა <a href="tel:591 90 35 90" class="phone-text">591 90 35 90</a>
                     </span>
                 </td></tr><tr class="weekend">
-                <td>8 თებ</td>
-                <td>კვირა</td>
-                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td>8 (კვი)</td>
+                <td>08:00-03:00</td>
                 <td ondrop="drop(event, 7)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        გუგა ბალანჩივაძე <br>
-                        <a href="tel:577 97 87 92" class="phone-text">577 97 87 92</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 7)" ondblclick="editCell(7)">
+                        გუგა ბალანჩივაძე <a href="tel:577 97 87 92" class="phone-text">577 97 87 92</a>
                     </span>
                 </td></tr><tr class="">
-                <td>9 თებ</td>
-                <td>ორშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>9 (ორშ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 8)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        გიორგი ტარყაშვილი <br>
-                        <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 8)" ondblclick="editCell(8)">
+                        გიორგი ტარყაშვილი <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
                     </span>
                 </td></tr><tr class="">
-                <td>10 თებ</td>
-                <td>სამშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>10 (სამ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 9)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        გიორგი ლომიძე <br>
-                        <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 9)" ondblclick="editCell(9)">
+                        გიორგი ლომიძე <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
                     </span>
                 </td></tr><tr class="">
-                <td>11 თებ</td>
-                <td>ოთხშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>11 (ოთხ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 10)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        ვასილ გოგალაძე <br>
-                        <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 10)" ondblclick="editCell(10)">
+                        ვასილ გოგალაძე <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
                     </span>
                 </td></tr><tr class="">
-                <td>12 თებ</td>
-                <td>ხუთშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>12 (ხუთ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 11)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        შალვა გაგნიძე <br>
-                        <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 11)" ondblclick="editCell(11)">
+                        შალვა გაგნიძე <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
                     </span>
                 </td></tr><tr class="">
-                <td>13 თებ</td>
-                <td>პარასკევი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>13 (პარ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 12)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        ბექა ტალახაძე <br>
-                        <a href="tel:551 98 27 72" class="phone-text">551 98 27 72</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 12)" ondblclick="editCell(12)">
+                        ბექა ტალახაძე <a href="tel:551 98 27 72" class="phone-text">551 98 27 72</a>
                     </span>
                 </td></tr><tr class="weekend">
-                <td>14 თებ</td>
-                <td>შაბათი</td>
-                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td>14 (შაბ)</td>
+                <td>08:00-03:00</td>
                 <td ondrop="drop(event, 13)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        გიორგი ბოჭორიშვილი <br>
-                        <a href="tel:577 01 83 12" class="phone-text">577 01 83 12</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 13)" ondblclick="editCell(13)">
+                        გიორგი ბოჭორიშვილი <a href="tel:577 01 83 12" class="phone-text">577 01 83 12</a>
                     </span>
                 </td></tr><tr class="weekend">
-                <td>15 თებ</td>
-                <td>კვირა</td>
-                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td>15 (კვი)</td>
+                <td>08:00-03:00</td>
                 <td ondrop="drop(event, 14)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        ალიკა ყალიჩავა <br>
-                        <a href="tel:591 90 35 90" class="phone-text">591 90 35 90</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 14)" ondblclick="editCell(14)">
+                        ალიკა ყალიჩავა <a href="tel:591 90 35 90" class="phone-text">591 90 35 90</a>
                     </span>
                 </td></tr><tr class="">
-                <td>16 თებ</td>
-                <td>ორშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>16 (ორშ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 15)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        გუგა ბალანჩივაძე <br>
-                        <a href="tel:577 97 87 92" class="phone-text">577 97 87 92</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 15)" ondblclick="editCell(15)">
+                        გუგა ბალანჩივაძე <a href="tel:577 97 87 92" class="phone-text">577 97 87 92</a>
                     </span>
                 </td></tr><tr class="">
-                <td>17 თებ</td>
-                <td>სამშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>17 (სამ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 16)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        გიორგი ტარყაშვილი <br>
-                        <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 16)" ondblclick="editCell(16)">
+                        გიორგი ტარყაშვილი <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
                     </span>
                 </td></tr><tr class="">
-                <td>18 თებ</td>
-                <td>ოთხშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>18 (ოთხ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 17)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        გიორგი ლომიძე <br>
-                        <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 17)" ondblclick="editCell(17)">
+                        გიორგი ლომიძე <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
                     </span>
                 </td></tr><tr class="">
-                <td>19 თებ</td>
-                <td>ხუთშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>19 (ხუთ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 18)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        ვასილ გოგალაძე <br>
-                        <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 18)" ondblclick="editCell(18)">
+                        ვასილ გოგალაძე <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
                     </span>
                 </td></tr><tr class="">
-                <td>20 თებ</td>
-                <td>პარასკევი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>20 (პარ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 19)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        შალვა გაგნიძე <br>
-                        <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 19)" ondblclick="editCell(19)">
+                        შალვა გაგნიძე <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
                     </span>
                 </td></tr><tr class="weekend">
-                <td>21 თებ</td>
-                <td>შაბათი</td>
-                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td>21 (შაბ)</td>
+                <td>08:00-03:00</td>
                 <td ondrop="drop(event, 20)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        ბექა ტალახაძე <br>
-                        <a href="tel:551 98 27 72" class="phone-text">551 98 27 72</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 20)" ondblclick="editCell(20)">
+                        ბექა ტალახაძე <a href="tel:551 98 27 72" class="phone-text">551 98 27 72</a>
                     </span>
                 </td></tr><tr class="weekend">
-                <td>22 თებ</td>
-                <td>კვირა</td>
-                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td>22 (კვი)</td>
+                <td>08:00-03:00</td>
                 <td ondrop="drop(event, 21)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        გიორგი ბოჭორიშვილი <br>
-                        <a href="tel:577 01 83 12" class="phone-text">577 01 83 12</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 21)" ondblclick="editCell(21)">
+                        გიორგი ბოჭორიშვილი <a href="tel:577 01 83 12" class="phone-text">577 01 83 12</a>
                     </span>
                 </td></tr><tr class="">
-                <td>23 თებ</td>
-                <td>ორშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>23 (ორშ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 22)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        ალიკა ყალიჩავა <br>
-                        <a href="tel:591 90 35 90" class="phone-text">591 90 35 90</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 22)" ondblclick="editCell(22)">
+                        ალიკა ყალიჩავა <a href="tel:591 90 35 90" class="phone-text">591 90 35 90</a>
                     </span>
                 </td></tr><tr class="">
-                <td>24 თებ</td>
-                <td>სამშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>24 (სამ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 23)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        გუგა ბალანჩივაძე <br>
-                        <a href="tel:577 97 87 92" class="phone-text">577 97 87 92</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 23)" ondblclick="editCell(23)">
+                        გუგა ბალანჩივაძე <a href="tel:577 97 87 92" class="phone-text">577 97 87 92</a>
                     </span>
                 </td></tr><tr class="">
-                <td>25 თებ</td>
-                <td>ოთხშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>25 (ოთხ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 24)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        გიორგი ტარყაშვილი <br>
-                        <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 24)" ondblclick="editCell(24)">
+                        გიორგი ტარყაშვილი <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
                     </span>
                 </td></tr><tr class="">
-                <td>26 თებ</td>
-                <td>ხუთშაბათი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>26 (ხუთ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 25)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        გიორგი ლომიძე <br>
-                        <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 25)" ondblclick="editCell(25)">
+                        გიორგი ლომიძე <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
                     </span>
                 </td></tr><tr class="">
-                <td>27 თებ</td>
-                <td>პარასკევი</td>
-                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td>27 (პარ)</td>
+                <td>18:00-03:00</td>
                 <td ondrop="drop(event, 26)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        ვასილ გოგალაძე <br>
-                        <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 26)" ondblclick="editCell(26)">
+                        ვასილ გოგალაძე <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
                     </span>
                 </td></tr><tr class="weekend">
-                <td>28 თებ</td>
-                <td>შაბათი</td>
-                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td>28 (შაბ)</td>
+                <td>08:00-03:00</td>
                 <td ondrop="drop(event, 27)" ondragover="allowDrop(event)">
-                    <span class="draggable" style="cursor: default;">
-                        შალვა გაგნიძე <br>
-                        <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
+                    <span class="draggable" draggable="true" ondragstart="drag(event, 27)" ondblclick="editCell(27)">
+                        შალვა გაგნიძე <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
                     </span>
                 </td></tr></tbody></table>
