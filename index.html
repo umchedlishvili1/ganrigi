@@ -1,204 +1,151 @@
 <style>
-            table { width: 100%; border-collapse: collapse; font-family: sans-serif; font-size: 14px; }
-            th, td { border: 1px solid #ddd; padding: 8px; }
-            th { background: #3498db; color: white; }
-            .weekend { background: #fff5f5; color: #e74c3c; }
-            .phone-text { color: #7f8c8d; text-decoration: none; font-size: 11px; }
-            .phone-text:hover { color: #27ae60; }
-        </style><div class="month-header">თებერვალი 2026</div><table><thead><tr><th>თარიღი</th><th>საათები</th><th>მორიგე</th></tr></thead><tbody id="body-1"><tr class="weekend">
-                <td>1 (კვი)</td>
-                <td>08:00-03:00</td>
-                <td ondrop="drop(event, 0)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 0)" ondblclick="editCell(0)">
-                        გიორგი ტარყაშვილი <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
-                    </span>
+            .t{color:#8b0000; text-align:center; font-size:24px; font-weight:bold; text-transform:uppercase; font-family:sans-serif;} 
+            .p-cont{text-align:center; margin-bottom:20px; border-bottom:3px solid #8b0000; padding-bottom:15px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;}
+            table{width:100%; border-collapse:collapse; font-family:sans-serif;} 
+            td,th{border:1px solid #ddd; padding:8px; text-align:left;} 
+            .weekend{background-color:#fff5f5 !important; color:#ef233c !important;} 
+            a{color:#4361ee; text-decoration:none; font-weight:bold;}
+            .name-txt{font-weight:bold; display:block; color:#333;}
+        </style><div class="t">განრიგი</div><div class="p-cont"></div><h3 style="color:#8b0000; border-left:5px solid #8b0000; padding-left:10px; margin-top:25px; background:#f1f4f8; padding:8px;">თებერვალი 2026</h3>
+                             <table><thead><tr><th style="width:15%">რიცხვი</th><th style="width:25%">საათები</th><th>მორიგე</th></tr></thead><tbody><tr class="weekend">
+                <td><b>1</b></td>
+                <td><small>08:00-03:00</small></td>
+                <td>
+                <span class="name-txt">გიორგი ლომიძე</span>
+                <a href="tel:555 55 82 22" class="phone-display">📞 555 55 82 22</a></td></tr><tr class="">
+                <td><b>2</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">გიორგი ბოჭორიშვილი</span>
+                <a href="tel:577 01 83 12" class="phone-display">📞 577 01 83 12</a></td></tr><tr class="">
+                <td><b>3</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">გიორგი ტარყაშვილი</span>
+                <a href="tel:577 38 52 50" class="phone-display">📞 577 38 52 50</a></td></tr><tr class="">
+                <td><b>4</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">შალვა გაგნიძე</span>
+                <a href="tel:551 77 02 00" class="phone-display">📞 551 77 02 00</a></td></tr><tr class="">
+                <td><b>5</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">ალიკა ყალიჩავა</span>
+                <a href="tel:591 90 35 90" class="phone-display">📞 591 90 35 90</a></td></tr><tr class="">
+                <td><b>6</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">ბექა ტალახაძე</span>
+                <a href="tel:551 98 27 72" class="phone-display">📞 551 98 27 72</a></td></tr><tr class="weekend">
+                <td><b>7</b></td>
+                <td><small>08:00-03:00</small></td>
+                <td>
+                <span class="name-txt">გიორგი ბოჭორიშვილი</span>
+                <a href="tel:577 01 83 12" class="phone-display">📞 577 01 83 12</a></td></tr><tr class="weekend">
+                <td><b>8</b></td>
+                <td><small>08:00-03:00</small></td>
+                <td>
+                <span class="name-txt">გიორგი ტარყაშვილი</span>
+                <a href="tel:577 38 52 50" class="phone-display">📞 577 38 52 50</a></td></tr><tr class="">
+                <td><b>9</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">ალიკა ყალიჩავა</span>
+                <a href="tel:591 90 35 90" class="phone-display">📞 591 90 35 90</a></td></tr><tr class="">
+                <td><b>10</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">გუგა ბალანჩივაძე</span>
+                <a href="tel:577 97 87 92" class="phone-display">📞 577 97 87 92</a></td></tr><tr class="">
+                <td><b>11</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">გიორგი ტარყაშვილი</span>
+                <a href="tel:577 38 52 50" class="phone-display">📞 577 38 52 50</a></td></tr><tr class="">
+                <td><b>12</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                    <span class="name-txt">გიორგი ლომიძე</span>
+                    <a href="tel:555 55 82 22" class="phone-display">📞 555 55 82 22</a>
                 </td></tr><tr class="">
-                <td>2 (ორშ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 1)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 1)" ondblclick="editCell(1)">
-                        გიორგი ლომიძე <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>3 (სამ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 2)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 2)" ondblclick="editCell(2)">
-                        ვასილ გოგალაძე <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>4 (ოთხ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 3)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 3)" ondblclick="editCell(3)">
-                        შალვა გაგნიძე <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>5 (ხუთ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 4)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 4)" ondblclick="editCell(4)">
-                        ბექა ტალახაძე <a href="tel:551 98 27 72" class="phone-text">551 98 27 72</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>6 (პარ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 5)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 5)" ondblclick="editCell(5)">
-                        გიორგი ბოჭორიშვილი <a href="tel:577 01 83 12" class="phone-text">577 01 83 12</a>
-                    </span>
-                </td></tr><tr class="weekend">
-                <td>7 (შაბ)</td>
-                <td>08:00-03:00</td>
-                <td ondrop="drop(event, 6)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 6)" ondblclick="editCell(6)">
-                        ალიკა ყალიჩავა <a href="tel:591 90 35 90" class="phone-text">591 90 35 90</a>
-                    </span>
-                </td></tr><tr class="weekend">
-                <td>8 (კვი)</td>
-                <td>08:00-03:00</td>
-                <td ondrop="drop(event, 7)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 7)" ondblclick="editCell(7)">
-                        გუგა ბალანჩივაძე <a href="tel:577 97 87 92" class="phone-text">577 97 87 92</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>9 (ორშ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 8)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 8)" ondblclick="editCell(8)">
-                        გიორგი ტარყაშვილი <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>10 (სამ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 9)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 9)" ondblclick="editCell(9)">
-                        გიორგი ლომიძე <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>11 (ოთხ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 10)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 10)" ondblclick="editCell(10)">
-                        ვასილ გოგალაძე <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>12 (ხუთ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 11)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 11)" ondblclick="editCell(11)">
-                        შალვა გაგნიძე <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>13 (პარ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 12)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 12)" ondblclick="editCell(12)">
-                        ბექა ტალახაძე <a href="tel:551 98 27 72" class="phone-text">551 98 27 72</a>
-                    </span>
-                </td></tr><tr class="weekend">
-                <td>14 (შაბ)</td>
-                <td>08:00-03:00</td>
-                <td ondrop="drop(event, 13)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 13)" ondblclick="editCell(13)">
-                        გიორგი ბოჭორიშვილი <a href="tel:577 01 83 12" class="phone-text">577 01 83 12</a>
-                    </span>
-                </td></tr><tr class="weekend">
-                <td>15 (კვი)</td>
-                <td>08:00-03:00</td>
-                <td ondrop="drop(event, 14)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 14)" ondblclick="editCell(14)">
-                        ალიკა ყალიჩავა <a href="tel:591 90 35 90" class="phone-text">591 90 35 90</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>16 (ორშ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 15)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 15)" ondblclick="editCell(15)">
-                        გუგა ბალანჩივაძე <a href="tel:577 97 87 92" class="phone-text">577 97 87 92</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>17 (სამ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 16)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 16)" ondblclick="editCell(16)">
-                        გიორგი ტარყაშვილი <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>18 (ოთხ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 17)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 17)" ondblclick="editCell(17)">
-                        გიორგი ლომიძე <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>19 (ხუთ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 18)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 18)" ondblclick="editCell(18)">
-                        ვასილ გოგალაძე <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>20 (პარ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 19)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 19)" ondblclick="editCell(19)">
-                        შალვა გაგნიძე <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
-                    </span>
-                </td></tr><tr class="weekend">
-                <td>21 (შაბ)</td>
-                <td>08:00-03:00</td>
-                <td ondrop="drop(event, 20)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 20)" ondblclick="editCell(20)">
-                        ბექა ტალახაძე <a href="tel:551 98 27 72" class="phone-text">551 98 27 72</a>
-                    </span>
-                </td></tr><tr class="weekend">
-                <td>22 (კვი)</td>
-                <td>08:00-03:00</td>
-                <td ondrop="drop(event, 21)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 21)" ondblclick="editCell(21)">
-                        გიორგი ბოჭორიშვილი <a href="tel:577 01 83 12" class="phone-text">577 01 83 12</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>23 (ორშ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 22)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 22)" ondblclick="editCell(22)">
-                        ალიკა ყალიჩავა <a href="tel:591 90 35 90" class="phone-text">591 90 35 90</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>24 (სამ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 23)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 23)" ondblclick="editCell(23)">
-                        გუგა ბალანჩივაძე <a href="tel:577 97 87 92" class="phone-text">577 97 87 92</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>25 (ოთხ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 24)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 24)" ondblclick="editCell(24)">
-                        გიორგი ტარყაშვილი <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>26 (ხუთ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 25)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 25)" ondblclick="editCell(25)">
-                        გიორგი ლომიძე <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
-                    </span>
-                </td></tr><tr class="">
-                <td>27 (პარ)</td>
-                <td>18:00-03:00</td>
-                <td ondrop="drop(event, 26)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 26)" ondblclick="editCell(26)">
-                        ვასილ გოგალაძე <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
-                    </span>
-                </td></tr><tr class="weekend">
-                <td>28 (შაბ)</td>
-                <td>08:00-03:00</td>
-                <td ondrop="drop(event, 27)" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, 27)" ondblclick="editCell(27)">
-                        შალვა გაგნიძე <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
-                    </span>
-                </td></tr></tbody></table>
+                <td><b>13</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">ვასილ გოგალაძე</span>
+                <a href="tel:577 35 55 56" class="phone-display">📞 577 35 55 56</a></td></tr><tr class="weekend">
+                <td><b>14</b></td>
+                <td><small>08:00-03:00</small></td>
+                <td>
+                <span class="name-txt">ვასილ გოგალაძე</span>
+                <a href="tel:577 35 55 56" class="phone-display">📞 577 35 55 56</a></td></tr><tr class="weekend">
+                <td><b>15</b></td>
+                <td><small>08:00-03:00</small></td>
+                <td>
+                <span class="name-txt">გუგა ბალანჩივაძე</span>
+                <a href="tel:577 97 87 92" class="phone-display">📞 577 97 87 92</a></td></tr><tr class="">
+                <td><b>16</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">ალიკა ყალიჩავა</span>
+                <a href="tel:591 90 35 90" class="phone-display">📞 591 90 35 90</a></td></tr><tr class="">
+                <td><b>17</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">გუგა ბალანჩივაძე</span>
+                <a href="tel:577 97 87 92" class="phone-display">📞 577 97 87 92</a></td></tr><tr class="">
+                <td><b>18</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">ვასილ გოგალაძე</span>
+                <a href="tel:577 35 55 56" class="phone-display">📞 577 35 55 56</a></td></tr><tr class="">
+                <td><b>19</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">გიორგი ტარყაშვილი</span>
+                <a href="tel:577 38 52 50" class="phone-display">📞 577 38 52 50</a></td></tr><tr class="">
+                <td><b>20</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">შალვა გაგნიძე</span>
+                <a href="tel:551 77 02 00" class="phone-display">📞 551 77 02 00</a></td></tr><tr class="weekend">
+                <td><b>21</b></td>
+                <td><small>08:00-03:00</small></td>
+                <td>
+                <span class="name-txt">ბექა ტალახაძე</span>
+                <a href="tel:551 98 27 72" class="phone-display">📞 551 98 27 72</a></td></tr><tr class="weekend">
+                <td><b>22</b></td>
+                <td><small>08:00-03:00</small></td>
+                <td>
+                <span class="name-txt">შალვა გაგნიძე</span>
+                <a href="tel:551 77 02 00" class="phone-display">📞 551 77 02 00</a></td></tr><tr class="">
+                <td><b>23</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">ალიკა ყალიჩავა</span>
+                <a href="tel:591 90 35 90" class="phone-display">📞 591 90 35 90</a></td></tr><tr class="">
+                <td><b>24</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">ვასილ გოგალაძე</span>
+                <a href="tel:577 35 55 56" class="phone-display">📞 577 35 55 56</a></td></tr><tr class="">
+                <td><b>25</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">გიორგი ლომიძე</span>
+                <a href="tel:555 55 82 22" class="phone-display">📞 555 55 82 22</a></td></tr><tr class="">
+                <td><b>26</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">გიორგი ბოჭორიშვილი</span>
+                <a href="tel:577 01 83 12" class="phone-display">📞 577 01 83 12</a></td></tr><tr class="">
+                <td><b>27</b></td>
+                <td><small>18:00-03:00</small></td>
+                <td>
+                <span class="name-txt">ბექა ტალახაძე</span>
+                <a href="tel:551 98 27 72" class="phone-display">📞 551 98 27 72</a></td></tr><tr class="weekend">
+                <td><b>28</b></td>
+                <td><small>08:00-03:00</small></td>
+                <td>
+                <span class="name-txt">ალიკა ყალიჩავა</span>
+                <a href="tel:591 90 35 90" class="phone-display">📞 591 90 35 90</a></td></tr></tbody></table>
