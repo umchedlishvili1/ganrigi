@@ -1,375 +1,265 @@
-<!DOCTYPE html>
-<html lang="ka">
-<head>
-    <meta charset="UTF-8">
-    <title>Duty Planner - Work Hours</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; display: flex; height: 100vh; }
-        #sidebar { width: 340px; background: #2c3e50; color: white; padding: 25px; box-shadow: 3px 0 10px rgba(0,0,0,0.2); overflow-y: auto; }
-        #main { flex-grow: 1; padding: 30px; overflow-y: auto; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; }
-        .staff-item { background: #1e272e; padding: 10px; margin-top: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #3498db; }
-        .del-btn { color: #ff7675; cursor: pointer; border: none; background: none; font-weight: bold; font-size: 18px; }
-        .stat-container { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; }
-        .stat-badge { background: #fff; border: 1px solid #3498db; padding: 4px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
-        th, td { padding: 12px; border: 1px solid #dee2e6; text-align: left; }
-        th { background: #3498db; color: white; }
-        .month-header { background: #2c3e50; color: white; padding: 12px; font-weight: bold; margin-top: 25px; border-radius: 4px; }
-        .draggable { cursor: grab; background: #e3f2fd; padding: 8px; border-radius: 6px; display: block; border: 1px solid #bbdefb; }
-        .phone-text { display: block; font-size: 11px; color: #7f8c8d; }
-        .hours-tag { font-size: 11px; background: #ffeaa7; color: #d35400; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-top: 4px; display: inline-block; }
-        .weekend { background: #fff5f5; color: #e74c3c; font-weight: bold; }
-        .btn { border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; color: white; }
-        .btn-gen { background: #27ae60; }
-        .btn-pdf { background: #e67e22; }
-    </style>
-</head>
-<body>
-
-<div id="sidebar">
-    <h3>📅 პერიოდი</h3>
-    <input type="month" id="startMonth">
-    <input type="month" id="endMonth">
-
-    <h3>👥 პერსონალი</h3>
-    <input type="text" id="staffName" placeholder="სახელი">
-    <input type="text" id="staffPhone" placeholder="ნომერი" onkeypress="if(event.key==='Enter') addStaff()">
-    <button class="btn btn-gen" onclick="addStaff()">დამატება</button>
-    <div id="staffListUI"></div>
-
-    <button class="btn btn-gen" style="margin-top: 30px;" onclick="generateNew()">🔄 განრიგის შექმნა</button>
-    <button class="btn btn-pdf" onclick="exportPDF()">📄 PDF ექსპორტი</button>
-</div>
-
-<div id="main">
-    <div class="card" id="printArea">
-        <h2 id="mainTitle">სამუშაო განრიგი და საათები</h2>
-        <div id="statsUI" class="stat-container"></div>
-        <div id="scheduleContainer"></div>
-    </div>
-</div>
-
-<script>
-    // ვიყენებთ იგივე გასაღებებს, რაც წინა ვერსიაში, ინფორმაცია რომ არ დაიკარგოს
-    let staff = JSON.parse(localStorage.getItem('savedStaffContacts')) || [];
-    let scheduleData = JSON.parse(localStorage.getItem('currentSchedule')) || [];
-
-    window.onload = () => {
-        const now = new Date();
-        const monthStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-        document.getElementById('startMonth').value = localStorage.getItem('startMonth') || monthStr;
-        document.getElementById('endMonth').value = localStorage.getItem('endMonth') || monthStr;
-        renderStaff();
-        if(scheduleData.length > 0) renderMultiTable();
-    };
-
-    function addStaff() {
-        const n = document.getElementById('staffName'), p = document.getElementById('staffPhone');
-        if(n.value.trim()) {
-            staff.push({ name: n.value.trim(), phone: p.value.trim() || "---" });
-            localStorage.setItem('savedStaffContacts', JSON.stringify(staff));
-            n.value = ""; p.value = ""; n.focus();
-            renderStaff();
-        }
-    }
-
-    function removeStaff(i) {
-        staff.splice(i, 1);
-        localStorage.setItem('savedStaffContacts', JSON.stringify(staff));
-        renderStaff();
-    }
-
-    function renderStaff() {
-        document.getElementById('staffListUI').innerHTML = staff.map((s, i) => `
-            <div class="staff-item">
-                <div><b>${s.name}</b><br><small>${s.phone}</small></div>
-                <button class="del-btn" onclick="removeStaff(${i})">×</button>
-            </div>`).join('');
-    }
-
-    function generateNew() {
-        if(staff.length === 0) return alert("დაამატეთ პერსონალი!");
-        const start = new Date(document.getElementById('startMonth').value);
-        const end = new Date(document.getElementById('endMonth').value);
-        localStorage.setItem('startMonth', document.getElementById('startMonth').value);
-        localStorage.setItem('endMonth', document.getElementById('endMonth').value);
-        
-        scheduleData = [];
-        let temp = new Date(start.getFullYear(), start.getMonth(), 1);
-        let idx = 0;
-        while(temp <= new Date(end.getFullYear(), end.getMonth() + 1, 0)) {
-            scheduleData.push({ 
-                date: new Date(temp), 
-                staffName: staff[idx % staff.length].name, 
-                staffPhone: staff[idx % staff.length].phone 
-            });
-            idx++; temp.setDate(temp.getDate() + 1);
-        }
-        localStorage.setItem('currentSchedule', JSON.stringify(scheduleData));
-        renderMultiTable();
-    }
-
-    function renderMultiTable() {
-        const container = document.getElementById('scheduleContainer');
-        container.innerHTML = "";
-        let currentMonth = -1;
-        let currentBody;
-        const months = ["იანვარი", "თებერვალი", "მარტი", "აპრილი", "მაისი", "ივნისი", "ივლისი", "აგვისტო", "სექტემბერი", "ოქტომბერი", "ნოებერი", "დეკემბერი"];
-        const days = ["კვირა", "ორშაბათი", "სამშაბათი", "ოთხშაბათი", "ხუთშაბათი", "პარასკევი", "შაბათი"];
-
-        scheduleData.forEach((item, i) => {
-            const d = new Date(item.date);
-            if(d.getMonth() !== currentMonth) {
-                currentMonth = d.getMonth();
-                container.innerHTML += `<div class="month-header">${months[currentMonth]} ${d.getFullYear()}</div>`;
-                const table = document.createElement('table');
-                table.innerHTML = `<thead><tr><th>თარიღი</th><th>დღე</th><th>საათები</th><th>მორიგე</th></tr></thead><tbody id="body-${currentMonth}"></tbody>`;
-                container.appendChild(table);
-                currentBody = document.getElementById(`body-${currentMonth}`);
-            }
-            
-            const isWE = d.getDay() === 0 || d.getDay() === 6;
-            // საათების ლოგიკა: შაბათ-კვირა 08:00, სხვა დღეები 18:00
-            const workHours = isWE ? "08:00 - 03:00" : "18:00 - 03:00";
-
-            currentBody.innerHTML += `<tr class="${isWE ? 'weekend' : ''}">
-                <td>${d.getDate()} ${months[currentMonth].substring(0,3)}</td>
-                <td>${days[d.getDay()]}</td>
-                <td><span class="hours-tag">${workHours}</span></td>
-                <td ondrop="drop(event, ${i})" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, ${i})" ondblclick="editCell(${i})">
-                        ${item.staffName} <span class="phone-text">${item.staffPhone}</span>
+<style>
+            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-family: sans-serif; }
+            th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+            th { background-color: #3498db; color: white; }
+            .month-header { background: #2c3e50; color: white; padding: 10px; font-weight: bold; margin-top: 20px; }
+            .weekend { background-color: #fff5f5; color: #e74c3c; }
+            .hours-tag { background: #ffeaa7; color: #d35400; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 11px; }
+            .phone-text { display: inline-block; font-size: 11px; color: #7f8c8d; transition: all 0.3s ease; text-decoration: none; position: relative; }
+            .phone-text:hover { color: #27ae60; font-weight: bold; }
+            .phone-text:hover::after { content: ' 📞'; animation: bounce 0.5s infinite alternate; }
+            @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-3px); } }
+        </style>
+<div class="month-header">თებერვალი 2026</div><table><thead><tr><th>თარიღი</th><th>დღე</th><th>საათები</th><th>მორიგე</th></tr></thead><tbody id="body-1"><tr class="weekend">
+                <td>1 თებ</td>
+                <td>კვირა</td>
+                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td ondrop="drop(event, 0)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        გიორგი ტარყაშვილი <br>
+                        <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
                     </span>
-                </td></tr>`;
-        });
-        updateStats();
-    }
-
-    function updateStats() {
-        const c = {};
-        scheduleData.forEach(item => c[item.staffName] = (c[item.staffName] || 0) + 1);
-        document.getElementById('statsUI').innerHTML = Object.entries(c).map(([n, count]) => `<div class="stat-badge">${n}: ${count} დღე</div>`).join('');
-    }
-
-    function editCell(i) {
-        const n = prompt("სახელი:", scheduleData[i].staffName);
-        if(n) {
-            scheduleData[i].staffName = n;
-            scheduleData[i].staffPhone = prompt("ნომერი:", scheduleData[i].staffPhone) || "";
-            localStorage.setItem('currentSchedule', JSON.stringify(scheduleData));
-            renderMultiTable();
-        }
-    }
-
-    function drag(ev, i) { ev.dataTransfer.setData("idx", i); }
-    function allowDrop(ev) { ev.preventDefault(); }
-    function drop(ev, to) {
-        ev.preventDefault();
-        const from = ev.dataTransfer.getData("idx");
-        [scheduleData[from].staffName, scheduleData[to].staffName] = [scheduleData[to].staffName, scheduleData[from].staffName];
-        [scheduleData[from].staffPhone, scheduleData[to].staffPhone] = [scheduleData[to].staffPhone, scheduleData[from].staffPhone];
-        localStorage.setItem('currentSchedule', JSON.stringify(scheduleData));
-        renderMultiTable();
-    }
-
-    async function exportPDF() {
-        const { jsPDF } = window.jspdf;
-        const canvas = await html2canvas(document.getElementById('printArea'), { scale: 1.5 });
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, 190, 0);
-        pdf.save("Work_Schedule_Hours.pdf");
-    }
-</script>
-</body>
-</html><!DOCTYPE html>
-<html lang="ka">
-<head>
-    <meta charset="UTF-8">
-    <title>Duty Planner - Work Hours</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; display: flex; height: 100vh; }
-        #sidebar { width: 340px; background: #2c3e50; color: white; padding: 25px; box-shadow: 3px 0 10px rgba(0,0,0,0.2); overflow-y: auto; }
-        #main { flex-grow: 1; padding: 30px; overflow-y: auto; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        input { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: 1px solid #ddd; box-sizing: border-box; }
-        .staff-item { background: #1e272e; padding: 10px; margin-top: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid #3498db; }
-        .del-btn { color: #ff7675; cursor: pointer; border: none; background: none; font-weight: bold; font-size: 18px; }
-        .stat-container { display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; padding: 10px; background: #f8f9fa; border-radius: 8px; }
-        .stat-badge { background: #fff; border: 1px solid #3498db; padding: 4px 10px; border-radius: 15px; font-size: 12px; font-weight: bold; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: white; }
-        th, td { padding: 12px; border: 1px solid #dee2e6; text-align: left; }
-        th { background: #3498db; color: white; }
-        .month-header { background: #2c3e50; color: white; padding: 12px; font-weight: bold; margin-top: 25px; border-radius: 4px; }
-        .draggable { cursor: grab; background: #e3f2fd; padding: 8px; border-radius: 6px; display: block; border: 1px solid #bbdefb; }
-        .phone-text { display: block; font-size: 11px; color: #7f8c8d; }
-        .hours-tag { font-size: 11px; background: #ffeaa7; color: #d35400; padding: 2px 6px; border-radius: 4px; font-weight: bold; margin-top: 4px; display: inline-block; }
-        .weekend { background: #fff5f5; color: #e74c3c; font-weight: bold; }
-        .btn { border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; color: white; }
-        .btn-gen { background: #27ae60; }
-        .btn-pdf { background: #e67e22; }
-    </style>
-</head>
-<body>
-
-<div id="sidebar">
-    <h3>📅 პერიოდი</h3>
-    <input type="month" id="startMonth">
-    <input type="month" id="endMonth">
-
-    <h3>👥 პერსონალი</h3>
-    <input type="text" id="staffName" placeholder="სახელი">
-    <input type="text" id="staffPhone" placeholder="ნომერი" onkeypress="if(event.key==='Enter') addStaff()">
-    <button class="btn btn-gen" onclick="addStaff()">დამატება</button>
-    <div id="staffListUI"></div>
-
-    <button class="btn btn-gen" style="margin-top: 30px;" onclick="generateNew()">🔄 განრიგის შექმნა</button>
-    <button class="btn btn-pdf" onclick="exportPDF()">📄 PDF ექსპორტი</button>
-</div>
-
-<div id="main">
-    <div class="card" id="printArea">
-        <h2 id="mainTitle">სამუშაო განრიგი და საათები</h2>
-        <div id="statsUI" class="stat-container"></div>
-        <div id="scheduleContainer"></div>
-    </div>
-</div>
-
-<script>
-    // ვიყენებთ იგივე გასაღებებს, რაც წინა ვერსიაში, ინფორმაცია რომ არ დაიკარგოს
-    let staff = JSON.parse(localStorage.getItem('savedStaffContacts')) || [];
-    let scheduleData = JSON.parse(localStorage.getItem('currentSchedule')) || [];
-
-    window.onload = () => {
-        const now = new Date();
-        const monthStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
-        document.getElementById('startMonth').value = localStorage.getItem('startMonth') || monthStr;
-        document.getElementById('endMonth').value = localStorage.getItem('endMonth') || monthStr;
-        renderStaff();
-        if(scheduleData.length > 0) renderMultiTable();
-    };
-
-    function addStaff() {
-        const n = document.getElementById('staffName'), p = document.getElementById('staffPhone');
-        if(n.value.trim()) {
-            staff.push({ name: n.value.trim(), phone: p.value.trim() || "---" });
-            localStorage.setItem('savedStaffContacts', JSON.stringify(staff));
-            n.value = ""; p.value = ""; n.focus();
-            renderStaff();
-        }
-    }
-
-    function removeStaff(i) {
-        staff.splice(i, 1);
-        localStorage.setItem('savedStaffContacts', JSON.stringify(staff));
-        renderStaff();
-    }
-
-    function renderStaff() {
-        document.getElementById('staffListUI').innerHTML = staff.map((s, i) => `
-            <div class="staff-item">
-                <div><b>${s.name}</b><br><small>${s.phone}</small></div>
-                <button class="del-btn" onclick="removeStaff(${i})">×</button>
-            </div>`).join('');
-    }
-
-    function generateNew() {
-        if(staff.length === 0) return alert("დაამატეთ პერსონალი!");
-        const start = new Date(document.getElementById('startMonth').value);
-        const end = new Date(document.getElementById('endMonth').value);
-        localStorage.setItem('startMonth', document.getElementById('startMonth').value);
-        localStorage.setItem('endMonth', document.getElementById('endMonth').value);
-        
-        scheduleData = [];
-        let temp = new Date(start.getFullYear(), start.getMonth(), 1);
-        let idx = 0;
-        while(temp <= new Date(end.getFullYear(), end.getMonth() + 1, 0)) {
-            scheduleData.push({ 
-                date: new Date(temp), 
-                staffName: staff[idx % staff.length].name, 
-                staffPhone: staff[idx % staff.length].phone 
-            });
-            idx++; temp.setDate(temp.getDate() + 1);
-        }
-        localStorage.setItem('currentSchedule', JSON.stringify(scheduleData));
-        renderMultiTable();
-    }
-
-    function renderMultiTable() {
-        const container = document.getElementById('scheduleContainer');
-        container.innerHTML = "";
-        let currentMonth = -1;
-        let currentBody;
-        const months = ["იანვარი", "თებერვალი", "მარტი", "აპრილი", "მაისი", "ივნისი", "ივლისი", "აგვისტო", "სექტემბერი", "ოქტომბერი", "ნოებერი", "დეკემბერი"];
-        const days = ["კვირა", "ორშაბათი", "სამშაბათი", "ოთხშაბათი", "ხუთშაბათი", "პარასკევი", "შაბათი"];
-
-        scheduleData.forEach((item, i) => {
-            const d = new Date(item.date);
-            if(d.getMonth() !== currentMonth) {
-                currentMonth = d.getMonth();
-                container.innerHTML += `<div class="month-header">${months[currentMonth]} ${d.getFullYear()}</div>`;
-                const table = document.createElement('table');
-                table.innerHTML = `<thead><tr><th>თარიღი</th><th>დღე</th><th>საათები</th><th>მორიგე</th></tr></thead><tbody id="body-${currentMonth}"></tbody>`;
-                container.appendChild(table);
-                currentBody = document.getElementById(`body-${currentMonth}`);
-            }
-            
-            const isWE = d.getDay() === 0 || d.getDay() === 6;
-            // საათების ლოგიკა: შაბათ-კვირა 08:00, სხვა დღეები 18:00
-            const workHours = isWE ? "08:00 - 03:00" : "18:00 - 03:00";
-
-            currentBody.innerHTML += `<tr class="${isWE ? 'weekend' : ''}">
-                <td>${d.getDate()} ${months[currentMonth].substring(0,3)}</td>
-                <td>${days[d.getDay()]}</td>
-                <td><span class="hours-tag">${workHours}</span></td>
-                <td ondrop="drop(event, ${i})" ondragover="allowDrop(event)">
-                    <span class="draggable" draggable="true" ondragstart="drag(event, ${i})" ondblclick="editCell(${i})">
-                        ${item.staffName} <span class="phone-text">${item.staffPhone}</span>
+                </td></tr><tr class="">
+                <td>2 თებ</td>
+                <td>ორშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 1)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        გიორგი ლომიძე <br>
+                        <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
                     </span>
-                </td></tr>`;
-        });
-        updateStats();
-    }
-
-    function updateStats() {
-        const c = {};
-        scheduleData.forEach(item => c[item.staffName] = (c[item.staffName] || 0) + 1);
-        document.getElementById('statsUI').innerHTML = Object.entries(c).map(([n, count]) => `<div class="stat-badge">${n}: ${count} დღე</div>`).join('');
-    }
-
-    function editCell(i) {
-        const n = prompt("სახელი:", scheduleData[i].staffName);
-        if(n) {
-            scheduleData[i].staffName = n;
-            scheduleData[i].staffPhone = prompt("ნომერი:", scheduleData[i].staffPhone) || "";
-            localStorage.setItem('currentSchedule', JSON.stringify(scheduleData));
-            renderMultiTable();
-        }
-    }
-
-    function drag(ev, i) { ev.dataTransfer.setData("idx", i); }
-    function allowDrop(ev) { ev.preventDefault(); }
-    function drop(ev, to) {
-        ev.preventDefault();
-        const from = ev.dataTransfer.getData("idx");
-        [scheduleData[from].staffName, scheduleData[to].staffName] = [scheduleData[to].staffName, scheduleData[from].staffName];
-        [scheduleData[from].staffPhone, scheduleData[to].staffPhone] = [scheduleData[to].staffPhone, scheduleData[from].staffPhone];
-        localStorage.setItem('currentSchedule', JSON.stringify(scheduleData));
-        renderMultiTable();
-    }
-
-    async function exportPDF() {
-        const { jsPDF } = window.jspdf;
-        const canvas = await html2canvas(document.getElementById('printArea'), { scale: 1.5 });
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 10, 10, 190, 0);
-        pdf.save("Work_Schedule_Hours.pdf");
-    }
-</script>
-</body>
-</html>
+                </td></tr><tr class="">
+                <td>3 თებ</td>
+                <td>სამშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 2)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        ვასილ გოგალაძე <br>
+                        <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>4 თებ</td>
+                <td>ოთხშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 3)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        შალვა გაგნიძე <br>
+                        <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>5 თებ</td>
+                <td>ხუთშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 4)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        ბექა ტალახაძე <br>
+                        <a href="tel:551 98 27 72" class="phone-text">551 98 27 72</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>6 თებ</td>
+                <td>პარასკევი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 5)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        გიორგი ბოჭორიშვილი <br>
+                        <a href="tel:577 01 83 12" class="phone-text">577 01 83 12</a>
+                    </span>
+                </td></tr><tr class="weekend">
+                <td>7 თებ</td>
+                <td>შაბათი</td>
+                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td ondrop="drop(event, 6)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        ალიკა ყალიჩავა <br>
+                        <a href="tel:591 90 35 90" class="phone-text">591 90 35 90</a>
+                    </span>
+                </td></tr><tr class="weekend">
+                <td>8 თებ</td>
+                <td>კვირა</td>
+                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td ondrop="drop(event, 7)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        გუგა ბალანჩივაძე <br>
+                        <a href="tel:577 97 87 92" class="phone-text">577 97 87 92</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>9 თებ</td>
+                <td>ორშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 8)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        გიორგი ტარყაშვილი <br>
+                        <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>10 თებ</td>
+                <td>სამშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 9)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        გიორგი ლომიძე <br>
+                        <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>11 თებ</td>
+                <td>ოთხშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 10)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        ვასილ გოგალაძე <br>
+                        <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>12 თებ</td>
+                <td>ხუთშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 11)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        შალვა გაგნიძე <br>
+                        <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>13 თებ</td>
+                <td>პარასკევი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 12)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        ბექა ტალახაძე <br>
+                        <a href="tel:551 98 27 72" class="phone-text">551 98 27 72</a>
+                    </span>
+                </td></tr><tr class="weekend">
+                <td>14 თებ</td>
+                <td>შაბათი</td>
+                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td ondrop="drop(event, 13)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        გიორგი ბოჭორიშვილი <br>
+                        <a href="tel:577 01 83 12" class="phone-text">577 01 83 12</a>
+                    </span>
+                </td></tr><tr class="weekend">
+                <td>15 თებ</td>
+                <td>კვირა</td>
+                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td ondrop="drop(event, 14)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        ალიკა ყალიჩავა <br>
+                        <a href="tel:591 90 35 90" class="phone-text">591 90 35 90</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>16 თებ</td>
+                <td>ორშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 15)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        გუგა ბალანჩივაძე <br>
+                        <a href="tel:577 97 87 92" class="phone-text">577 97 87 92</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>17 თებ</td>
+                <td>სამშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 16)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        გიორგი ტარყაშვილი <br>
+                        <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>18 თებ</td>
+                <td>ოთხშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 17)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        გიორგი ლომიძე <br>
+                        <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>19 თებ</td>
+                <td>ხუთშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 18)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        ვასილ გოგალაძე <br>
+                        <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>20 თებ</td>
+                <td>პარასკევი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 19)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        შალვა გაგნიძე <br>
+                        <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
+                    </span>
+                </td></tr><tr class="weekend">
+                <td>21 თებ</td>
+                <td>შაბათი</td>
+                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td ondrop="drop(event, 20)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        ბექა ტალახაძე <br>
+                        <a href="tel:551 98 27 72" class="phone-text">551 98 27 72</a>
+                    </span>
+                </td></tr><tr class="weekend">
+                <td>22 თებ</td>
+                <td>კვირა</td>
+                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td ondrop="drop(event, 21)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        გიორგი ბოჭორიშვილი <br>
+                        <a href="tel:577 01 83 12" class="phone-text">577 01 83 12</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>23 თებ</td>
+                <td>ორშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 22)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        ალიკა ყალიჩავა <br>
+                        <a href="tel:591 90 35 90" class="phone-text">591 90 35 90</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>24 თებ</td>
+                <td>სამშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 23)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        გუგა ბალანჩივაძე <br>
+                        <a href="tel:577 97 87 92" class="phone-text">577 97 87 92</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>25 თებ</td>
+                <td>ოთხშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 24)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        გიორგი ტარყაშვილი <br>
+                        <a href="tel:577 38 52 50" class="phone-text">577 38 52 50</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>26 თებ</td>
+                <td>ხუთშაბათი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 25)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        გიორგი ლომიძე <br>
+                        <a href="tel:555 55 82 22" class="phone-text">555 55 82 22</a>
+                    </span>
+                </td></tr><tr class="">
+                <td>27 თებ</td>
+                <td>პარასკევი</td>
+                <td><span class="hours-tag">18:00 - 03:00</span></td>
+                <td ondrop="drop(event, 26)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        ვასილ გოგალაძე <br>
+                        <a href="tel:577 35 55 56" class="phone-text">577 35 55 56</a>
+                    </span>
+                </td></tr><tr class="weekend">
+                <td>28 თებ</td>
+                <td>შაბათი</td>
+                <td><span class="hours-tag">08:00 - 03:00</span></td>
+                <td ondrop="drop(event, 27)" ondragover="allowDrop(event)">
+                    <span class="draggable" style="cursor: default;">
+                        შალვა გაგნიძე <br>
+                        <a href="tel:551 77 02 00" class="phone-text">551 77 02 00</a>
+                    </span>
+                </td></tr></tbody></table>
